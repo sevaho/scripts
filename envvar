@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# ==========================================================
+# Author: https://github.com/sevaho
+# Repo: https://github.com/sevaho/scripts
+#
+# Be able to replace bash variables for example: `${VARIABLE}`
+# with environment variables in a file.
+# ==========================================================
+
+# Extract all environment variables from the file
+env_vars=$(grep -o '\${[a-zA-Z_][a-zA-Z0-9_]*}' "$1" | tr -d '${}' | sort | uniq)
+
+# Check if each environment variable is set
+missing_vars=()
+for var in $env_vars; do
+  if [ -z "${!var}" ]; then
+    missing_vars+=("$var")
+  fi
+done
+
+# If there are missing variables, print an error message and exit
+if [ ${#missing_vars[@]} -ne 0 ]; then
+  echo "Error: The following environment variables are not set: ${missing_vars[*]}"
+  exit 1
+fi
+
+set -e
+eval "cat <<EOF
+$(<$1)
+EOF
+"

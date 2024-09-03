@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# ==========================================================
+# Author: https://github.com/sevaho
+# Repo: https://github.com/sevaho/scripts
+#
+# Print all 255 colors in the terminal
+# pretty sure I snagged this one from stackoverflow
+# ==========================================================
+
+main(){
+    printcolors | less
+}
+
+printcolors(){
+
+    for i in {0..51}; do
+
+        j=$(( i+51 ))
+        k=$(( i+102 ))
+        l=$(( i+153 ))
+        m=$(( i+204 ))
+        printf "\x1b[38;5;${i}mcolour${i} \t\x1b[0m\x1b[38;5;${j}mcolour${j}\x1b[0m\t\x1b[0m\x1b[38;5;${k}mcolour${k}\x1b[0m\t\x1b[0m\x1b[38;5;${l}mcolour${l}\x1b[0m\t\x1b[0m\x1b[38;5;${m}mcolour${m}\x1b[0m\n"
+
+    done
+
+}
+
+main "${@}"

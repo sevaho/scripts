@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# ==========================================================
+# Author: https://github.com/sevaho
+# Repo: https://github.com/sevaho/scripts
+#
+# I don't think this is very useful, well it needs improvement
+# ==========================================================
+
+tag_list_sorted=`git --no-pager tag --sort=-creatordate`
+array=(${tag_list_sorted// / })
+
+length_of_tags_min_1=$((${#array[@]}-1))
+
+for (( c=$length_of_tags_min_1; c>0; c-- ))
+do
+    l=`git log -1 --format=%ai ${array[(($c - 1))]}`
+    echo "### ${array[(($c - 1))]} $l"
+    echo -e ""
+    git --no-pager log --all --stat --pretty=format:"%s, #%h by @%cn" ${array[$c]}...${array[(($c - 1))]} > /tmp/gitlog.txt
+    sed -i -e 's/^/-   /' /tmp/gitlog.txt
+    cat /tmp/gitlog.txt
+    echo -e "\n"
+done

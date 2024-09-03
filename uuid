@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+
+# ==========================================================
+# Author: https://github.com/sevaho
+# Repo: https://github.com/sevaho/scripts
+#
+# ==========================================================
+
+import uuid
+
+print(uuid.uuid4())

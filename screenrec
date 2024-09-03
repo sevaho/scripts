@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# ==========================================================
+# Author: https://github.com/sevaho
+# Repo: https://github.com/sevaho/scripts
+#
+# ==========================================================
+
+
+# to capture webcam
+# ffplay /dev/video0
+
+date=$(date '+%Y%m%d-%H%M%S')
+
+ffmpeg -y -f pulse -ac 1 -acodec pcm_s16le -threads 0 -i default -f x11grab -s 2560x1440 -i :0.0+1080,0 -r 30 "$date".mkv

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# ==========================================================
+# Author: https://github.com/sevaho
+# Repo: https://github.com/sevaho/scripts
+#
+# ==========================================================
+
+PLAYER=spotifyd
+
+STATUS=`playerctl --player=$PLAYER status`
+SONG=`playerctl --player=$PLAYER status`
+CODE=$?
+
+if (( $CODE > 0 )); then
+    echo "%{F#5fafd7}  OFF"
+else
+    SONG=`playerctl metadata --format "Now playing: {{ artist }}:{{ title }}" | cut -c1-20`
+    echo "%{F#2aa198}  $STATUS - $SONG"
+fi
