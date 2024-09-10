@@ -6,16 +6,26 @@
 #
 # Be able to replace bash variables for example: `${VARIABLE}`
 # with environment variables in a file.
+# Be able to replace bash variables that will be base64 encoded for example: `${VARIABLE::BASE64}`
+# with environment variables in a file.
 # ==========================================================
 
-# Extract all environment variables from the file
-env_vars=$(grep -o '\${[a-zA-Z_][a-zA-Z0-9_]*}' "$1" | tr -d '${}' | sort | uniq)
+if [ -z $1 ]; then
+    echo "The first and only argument should be a filepath!"
+    exit 1
+fi
+
+# Extract all environment variables and their optional suffixes from the file
+env_vars=$(grep -o '\${[a-zA-Z_][a-zA-Z0-9_]*\(::BASE64\)\?}' "$1" | tr -d '${}' | sort | uniq)
 
 # Check if each environment variable is set
 missing_vars=()
 for var in $env_vars; do
-  if [ -z "${!var}" ]; then
-    missing_vars+=("$var")
+  # Remove the ::BASE64 suffix to get the actual environment variable name
+  var_name=$(echo $var | sed 's/::BASE64//')
+  
+  if [ -z "${!var_name}" ]; then
+    missing_vars+=("$var_name")
   fi
 done
 
@@ -26,7 +36,9 @@ if [ ${#missing_vars[@]} -ne 0 ]; then
 fi
 
 set -e
+
+# Replace the template with values, base64 encoding if necessary
 eval "cat <<EOF
-$(<$1)
+$(sed -e 's/\${\([a-zA-Z_][a-zA-Z0-9_]*\)::BASE64}/\$(echo \${\1} | base64 -w0)/g' -e 's/\${\([a-zA-Z_][a-zA-Z0-9_]*\)}/\${\1}/g' $1)
 EOF
 "
